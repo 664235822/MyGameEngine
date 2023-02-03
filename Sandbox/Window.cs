@@ -35,7 +35,7 @@ namespace Sandbox
         private VertexArrayObject vao;
         private VertexBufferObject vbo;
         private IndexBufferObject ebo;
-        private int program;
+        private Shader shader;
         
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title }) {
 
@@ -52,37 +52,7 @@ namespace Sandbox
             ebo = new IndexBufferObject(indices); ;
             vao = new VertexArrayObject(ebo,vbo);
 
-            string vertexSource = @"#version 460 core 
-                layout (location = 0) in vec3 aPos;
-                layout (location = 1) in vec3 aColor;
-                
-                layout (location = 0) out vec3 color;
-                void main()
-                {
-                    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-                    color = aColor;
-                }";
-
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vertexShader, vertexSource);
-            GL.CompileShader(vertexShader);
-
-            string fragmentSource = @"#version 460 core
-                out vec4 FragColor;
-                layout (location = 0) in vec3 color;
-
-                void main()
-                {
-                    FragColor = vec4(color, 1.0f);
-                }";
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShader, fragmentSource);
-            GL.CompileShader(fragmentShader);
-
-            program = GL.CreateProgram();
-            GL.AttachShader(program, vertexShader);
-            GL.AttachShader(program, fragmentShader);
-            GL.LinkProgram(program);
+            shader = new Shader(@"G:\MyGameEngine\Core\Shader\Triangles.glsl");
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -90,7 +60,7 @@ namespace Sandbox
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(Color.Black);
             vao.Bind();
-            GL.UseProgram(program);
+            shader.Bind();
             if (vao.IndexBufferObject == null)
             {
                 GL.DrawArrays(PrimitiveType.Triangles,0,3);
