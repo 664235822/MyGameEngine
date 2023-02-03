@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Render;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -13,14 +14,15 @@ namespace Sandbox
 {
     internal class Window : GameWindow
     {
-        float[] vertices = {
-            0.5f, 0.5f, 0.0f, 1,0,0,  // 右上角
-            0.5f, -0.5f, 0.0f, 0,1,0, // 右下角
-            -0.5f, -0.5f, 0.0f, 0,0,1,// 左下角
-            -0.5f, 0.5f, 0.0f ,1,0,1  // 左上角
+        private float[] vertices =
+        {
+            0.5f, 0.5f, 0.0f, 1, 0, 0, // 右上角
+            0.5f, -0.5f, 0.0f, 0, 1, 0, // 右下角
+            -0.5f, -0.5f, 0.0f, 0, 0, 1, // 左下角
+            -0.5f, 0.5f, 0.0f, 1, 0, 1 // 左上角
         };
 
-        private int[] indices =
+        private uint[] indices =
         {
             // 注意索引从0开始! 
             // 此例的索引(0,1,2,3)就是顶点数组vertices的下标，
@@ -30,9 +32,9 @@ namespace Sandbox
             1, 2, 3 // 第二个三角形
         };
 
-        private int vao;
-        private int vbo;
-        private int ebo;
+        private VertexArrayObject vao;
+        private VertexBufferObject vbo;
+        private IndexBufferObject ebo;
         private int program;
         
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title }) {
@@ -42,13 +44,13 @@ namespace Sandbox
         protected override void OnLoad()
         {
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            vao = GL.GenVertexArray();
-            GL.BindVertexArray(vao);
-            
-            vbo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices,
-                BufferUsageHint.StaticDraw);
+
+            vbo = new VertexBufferObject(vertices);
+            VertexBufferLayout layout = new VertexBufferLayout();
+            layout.AddElement(new VertexBufferLayoutElement(0, 3), new VertexBufferLayoutElement(1, 3));
+            vbo.AddLayout(layout);
+            ebo = new IndexBufferObject(indices); ;
+            vao = new VertexArrayObject(ebo,vbo);
 
             string vertexSource = @"#version 460 core 
                 layout (location = 0) in vec3 aPos;
@@ -60,11 +62,7 @@ namespace Sandbox
                     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
                     color = aColor;
                 }";
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
-            
+
             int vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, vertexSource);
             GL.CompileShader(vertexShader);
@@ -85,21 +83,22 @@ namespace Sandbox
             GL.AttachShader(program, vertexShader);
             GL.AttachShader(program, fragmentShader);
             GL.LinkProgram(program);
-
-            ebo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer,ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices,
-                BufferUsageHint.StaticDraw);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(Color.Black);
-            GL.BindVertexArray(vao);
+            vao.Bind();
             GL.UseProgram(program);
-            //GL.DrawArrays(PrimitiveType.Triangles,0,3);
-            GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
+            if (vao.IndexBufferObject == null)
+            {
+                GL.DrawArrays(PrimitiveType.Triangles,0,3);
+            }
+            else
+            {
+                GL.DrawElements(PrimitiveType.Triangles, ebo.Length, DrawElementsType.UnsignedInt, 0);
+            }
             SwapBuffers();
         }
 
