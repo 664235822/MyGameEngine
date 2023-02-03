@@ -14,10 +14,10 @@ namespace Sandbox
     internal class Window : GameWindow
     {
         float[] vertices = {
-            0.5f, 0.5f, 0.0f,   // 右上角
-            0.5f, -0.5f, 0.0f,  // 右下角
-            -0.5f, -0.5f, 0.0f, // 左下角
-            -0.5f, 0.5f, 0.0f   // 左上角
+            0.5f, 0.5f, 0.0f, 1,0,0,  // 右上角
+            0.5f, -0.5f, 0.0f, 0,1,0, // 右下角
+            -0.5f, -0.5f, 0.0f, 0,0,1,// 左下角
+            -0.5f, 0.5f, 0.0f ,1,0,1  // 左上角
         };
 
         private int[] indices =
@@ -50,26 +50,32 @@ namespace Sandbox
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices,
                 BufferUsageHint.StaticDraw);
 
-            string vertexSource = @"#version 330 core 
+            string vertexSource = @"#version 460 core 
                 layout (location = 0) in vec3 aPos;
-
+                layout (location = 1) in vec3 aColor;
+                
+                layout (location = 0) out vec3 color;
                 void main()
                 {
                     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+                    color = aColor;
                 }";
-            GL.VertexAttribPointer(0,3,VertexAttribPointerType.Float,false,3*sizeof(float),0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+            GL.EnableVertexAttribArray(1);
             
             int vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, vertexSource);
             GL.CompileShader(vertexShader);
 
-            string fragmentSource = @"#version 330 core
+            string fragmentSource = @"#version 460 core
                 out vec4 FragColor;
+                layout (location = 0) in vec3 color;
 
                 void main()
                 {
-                    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+                    FragColor = vec4(color, 1.0f);
                 }";
             int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(fragmentShader, fragmentSource);
