@@ -9,6 +9,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Sandbox
 {
@@ -16,10 +17,10 @@ namespace Sandbox
     {
         private float[] vertices =
         {
-            0.5f, 0.5f, 0.0f, 1, 0, 0, // 右上角
-            0.5f, -0.5f, 0.0f, 0, 1, 0, // 右下角
-            -0.5f, -0.5f, 0.0f, 0, 0, 1, // 左下角
-            -0.5f, 0.5f, 0.0f, 1, 0, 1 // 左上角
+            0.5f, 0.5f, 0.0f, // 右上角
+            0.5f, -0.5f, 0.0f, // 右下角
+            -0.5f, -0.5f, 0.0f,  // 左下角
+            -0.5f, 0.5f, 0.0f  // 左上角
         };
 
         private uint[] indices =
@@ -47,7 +48,7 @@ namespace Sandbox
 
             vbo = new VertexBufferObject(vertices);
             VertexBufferLayout layout = new VertexBufferLayout();
-            layout.AddElement(new VertexBufferLayoutElement(0, 3), new VertexBufferLayoutElement(1, 3));
+            layout.AddElement(new VertexBufferLayoutElement(0, 3));
             vbo.AddLayout(layout);
             ebo = new IndexBufferObject(indices); ;
             vao = new VertexArrayObject(ebo,vbo);
@@ -55,20 +56,26 @@ namespace Sandbox
             shader = new Shader(@"G:\MyGameEngine\Core\Shader\Triangles.glsl");
         }
 
+        private double totalTime;
+
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(Color.Black);
             vao.Bind();
             shader.Bind();
+            shader.SetUniform("color",
+                new Vector3(MathF.Sin((float)totalTime), MathF.Cos((float)totalTime), MathF.Atan((float)totalTime)));
             if (vao.IndexBufferObject == null)
             {
-                GL.DrawArrays(PrimitiveType.Triangles,0,3);
+                GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
             }
             else
             {
                 GL.DrawElements(PrimitiveType.Triangles, ebo.Length, DrawElementsType.UnsignedInt, 0);
             }
+
+            totalTime += args.Time;
             SwapBuffers();
         }
 
