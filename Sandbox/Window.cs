@@ -10,6 +10,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using StbImageSharp;
 
 namespace Sandbox
 {
@@ -17,10 +18,10 @@ namespace Sandbox
     {
         private float[] vertices =
         {
-            0.5f, 0.5f, 0.0f, // 右上角
-            0.5f, -0.5f, 0.0f, // 右下角
-            -0.5f, -0.5f, 0.0f,  // 左下角
-            -0.5f, 0.5f, 0.0f  // 左上角
+            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 右上
+            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // 右下
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
+            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f
         };
 
         private uint[] indices =
@@ -37,9 +38,11 @@ namespace Sandbox
         private VertexBufferObject vbo;
         private IndexBufferObject ebo;
         private Shader shader;
-        
-        public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title }) {
-
+        private Texture2D texture01;
+        private Texture2D texture02;
+        public Window(int width, int height, string title) : base(GameWindowSettings.Default,
+            new NativeWindowSettings() { Size = (width, height), Title = title })
+        {
         }
 
         protected override void OnLoad()
@@ -48,12 +51,16 @@ namespace Sandbox
 
             vbo = new VertexBufferObject(vertices);
             VertexBufferLayout layout = new VertexBufferLayout();
-            layout.AddElement(new VertexBufferLayoutElement(0, 3));
+            layout.AddElement(new VertexBufferLayoutElement(0, 3),
+                new VertexBufferLayoutElement(1,3),
+                new VertexBufferLayoutElement(2,2));
             vbo.AddLayout(layout);
-            ebo = new IndexBufferObject(indices); ;
-            vao = new VertexArrayObject(ebo,vbo);
-
+            ebo = new IndexBufferObject(indices);
+            vao = new VertexArrayObject(ebo, vbo);
             shader = new Shader(@"G:\MyGameEngine\Core\Shader\Triangles.glsl");
+            texture01 = new Texture2D(@"G:\MyGameEngine\Core\Image\SmallPig1997.jpg");
+            //texture02 = new Texture2D(@"G:\MyGameEngine\Core\Image\Justin Timberlake.png");
+            texture02 = new Texture2D(Color4.Red);
         }
 
         private double totalTime;
@@ -66,6 +73,11 @@ namespace Sandbox
             shader.Bind();
             shader.SetUniform("color",
                 new Vector3(MathF.Sin((float)totalTime), MathF.Cos((float)totalTime), MathF.Atan((float)totalTime)));
+            shader.SetUniform("mainTex", 0);
+            texture01.Bind();
+            shader.SetUniform("subTex", 1);
+            texture02.Bind(1);
+            
             if (vao.IndexBufferObject == null)
             {
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
