@@ -33,7 +33,7 @@ public class VertexArrayObject : IDisposable
     public void Bind()
     {
         GL.BindBuffer(BufferTarget.ArrayBuffer, id);
-        IndexBufferObject.Bind();
+        IndexBufferObject?.Bind();
     }
 
     public void UnBind()
