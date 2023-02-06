@@ -4,6 +4,7 @@ namespace Core.Render;
 
 public class Mesh : IDisposable
 {
+    public string MeshName { get; }
     public int VertexCount { get; }
     public int IndexCount { get; }
     public int MaterialIndex { get; }
@@ -12,8 +13,9 @@ public class Mesh : IDisposable
     private VertexBufferObject vertexBufferObject;
     private VertexArrayObject vertexArrayObject;
 
-    public Mesh(List<Vertex> vertices, List<uint> indices, int materialIndex)
+    public Mesh(string meshName, List<Vertex> vertices, List<uint> indices, int materialIndex)
     {
+        MeshName = meshName;
         VertexCount = vertices.Count;
         IndexCount = indices.Count;
         MaterialIndex = materialIndex;
