@@ -1,8 +1,10 @@
 ﻿#shader vertex
 #version 410 core
 layout (location = 0) in vec3 aPos;
-//layout (location = 1) in vec3 aColor;
-layout (location = 1) in vec2 aTexCoords;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
+layout (location = 3) in vec3 geo_Tangent;
+layout (location = 4) in vec3 geo_BitTangent;
 layout (location = 0) out vec3 color;
 layout (location = 1) out vec2 texCoords;
 uniform mat4 model;
@@ -21,8 +23,7 @@ layout (location = 1) in vec2 texCoords;
 out vec4 FragColor;
 
 uniform sampler2D mainTex;
-uniform sampler2D subTex;
 void main()
 {
-    FragColor = mix(texture(mainTex, texCoords), texture(subTex, texCoords), 0.5);
+    FragColor = texture(mainTex, texCoords);
 }

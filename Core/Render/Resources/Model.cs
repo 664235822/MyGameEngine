@@ -1,15 +1,32 @@
 ﻿using Assimp;
 using Core.Render.Geometry;
+using Core.Render.Log;
 
-namespace Core.Render;
+namespace Core.Render.Resources;
 
 public class Model : IDisposable
 {
+    public static Model Create(string path)
+    {
+        Model? model = null;
+        try
+        {
+            model = new Model(path);
+        }
+        catch (Exception e)
+        {
+            LogManager.ErrorLogCore(e.Message);
+        }
+
+        return model;
+    }
+
     public string Path { get; }
     public List<Mesh> Meshes { get; }
     public List<string> MaterialNames { get; }
+    public bool IsDestroy { get; private set; } = false;
 
-    public Model(string path)
+    private Model(string path)
     {
         Path = path;
 
@@ -24,7 +41,7 @@ public class Model : IDisposable
         if (scene is null || (scene.SceneFlags & SceneFlags.Incomplete) == SceneFlags.Incomplete ||
             scene?.RootNode is null)
         {
-            Console.WriteLine("assimp load error!");
+            LogManager.ErrorLogCore("assimp load error!");
             return (null, null);
         }
 
@@ -51,15 +68,17 @@ public class Model : IDisposable
 
     private void ProcessNode(Scene scene, List<Mesh> meshes, Node rootNode, Assimp.Matrix4x4 transform)
     {
+        Matrix4x4 nodeTransform = rootNode.Transform * transform;
+
         foreach (var index in rootNode.MeshIndices)
         {
             Assimp.Mesh mesh = scene.Meshes[index];
-            meshes.Add(ProcessMesh(mesh, transform));
+            meshes.Add(ProcessMesh(mesh, nodeTransform));
         }
 
         foreach (var node in rootNode.Children)
         {
-            ProcessNode(scene, meshes, node, node.Transform);
+            ProcessNode(scene, meshes, node, nodeTransform);
         }
     }
 
@@ -116,9 +135,14 @@ public class Model : IDisposable
 
     public void Dispose()
     {
-        foreach (var mesh in Meshes)
+        if (!IsDestroy)
         {
-            mesh.Dispose();
+            foreach (var mesh in Meshes)
+            {
+                mesh.Dispose();
+            }
+
+            IsDestroy = true;
         }
     }
 }

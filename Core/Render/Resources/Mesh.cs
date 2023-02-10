@@ -1,6 +1,7 @@
-﻿using Core.Render.Geometry;
+﻿using Core.Render.Buffers;
+using Core.Render.Geometry;
 
-namespace Core.Render;
+namespace Core.Render.Resources;
 
 public class Mesh : IDisposable
 {
