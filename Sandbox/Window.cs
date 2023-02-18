@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Core.Render.Log;
 using Core.Render.Resources;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
