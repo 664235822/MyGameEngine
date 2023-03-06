@@ -32,9 +32,9 @@ namespace Sandbox
         {
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
-            myModel = Model.Create(@"G:\MyGameEngine\Core\Resources\SkyCar.fbx");
+            myModel = Model.Create(@"G:\MyGameEngine\Core\Resources\backpack.obj");
             shader = Shader.Create(@"G:\MyGameEngine\Core\Shader\Triangles.glsl");
-            texture01 = Texture2D.Create(Color.White);
+            texture01 = Texture2D.Create(@"G:\MyGameEngine\Core\Resources\diffuse.jpg");
         }
 
         private Matrix4 model;
@@ -49,9 +49,8 @@ namespace Sandbox
                      ClearBufferMask.StencilBufferBit);
             GL.ClearColor(Color.SeaGreen);
             shader.Bind();
-            model = Matrix4.Identity * Matrix4.CreateRotationY(MathHelper.DegreesToRadians((float)(10 * time)));
-            view = Matrix4.CreateTranslation(0, -100, 600) *
-                   Matrix4.LookAt(new Vector3(0, 0, -1), Vector3.Zero, Vector3.UnitY);
+            model = Matrix4.Identity;
+            view = Matrix4.LookAt(new Vector3(0, 0, -10), Vector3.Zero, Vector3.UnitY);
             perspective =
                 Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), width / height, 0.1f, 1000f);
             shader.SetUniform("mainTex", 0);
