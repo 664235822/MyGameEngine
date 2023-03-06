@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.ECS.Components;
 using Core.Render.Resources;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -31,6 +32,9 @@ namespace Sandbox
         protected override void OnLoad()
         {
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+
+            Transform c1 = new Transform(Guid.NewGuid());
+            c1.LocalPosition += new Vector3(0, 0, 1);
 
             myModel = Model.Create(@"G:\MyGameEngine\Core\Resources\backpack.obj");
             shader = Shader.Create(@"G:\MyGameEngine\Core\Shader\Triangles.glsl");
