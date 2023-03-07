@@ -33,7 +33,7 @@ namespace Sandbox
         {
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
-            Transform c1 = new Transform(Guid.NewGuid());
+            CTransform c1 = new CTransform();
             c1.LocalPosition += new Vector3(0, 0, 1);
 
             myModel = Model.Create(@"G:\MyGameEngine\Core\Resources\backpack.obj");

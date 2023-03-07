@@ -1,10 +1,10 @@
 ﻿namespace Core.ECS.Components;
 
-public class IdComponent:IComponent
+public class CId:IComponent
 {
     public Guid Id { get; }
 
-    public IdComponent(Guid id)
+    public CId()
     {
         Id = Guid.NewGuid();
     }

@@ -2,13 +2,13 @@
 
 namespace Core.ECS.Components;
 
-public class Transform : IComponent
+public class CTransform : IComponent
 {
     public Guid Id { get; }
 
-    public Transform(Guid id)
+    public CTransform()
     {
-        Id = id;
+        Id = Guid.NewGuid();
 
         position = new Vector3();
         rotation = Quaternion.Identity;
