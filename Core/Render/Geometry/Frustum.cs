@@ -68,8 +68,10 @@ public struct Frustum
                RightPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius;
     }
 
-    public bool IsBoundingSphereInFrustum(Sphere sphere)
+    public bool IsBoundingSphereInFrustum(Quaternion rotation, Vector3 scale, Sphere sphere)
     {
-        return false;
+        float radius = MathHelper.Max(MathHelper.Max(scale.X, scale.Y), scale.Z) * sphere.Radius;
+        Vector3 centerPos = rotation * sphere.Position;
+        return IsSphereInFrustum(new Sphere() { Position = centerPos, Radius = radius });
     }
 }
