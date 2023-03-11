@@ -1,11 +1,15 @@
-﻿namespace Core.ECS.Components;
+﻿using System.Runtime.Serialization;
 
-public class CId:IComponent
+namespace Core.ECS.Components;
+
+[DataContract]
+public class CId : IComponent
 {
-    public Guid Id { get; }
+    [DataMember] private Guid id;
+    public Guid Id => id;
 
     public CId()
     {
-        Id = Guid.NewGuid();
+        id = Guid.NewGuid();
     }
 }

@@ -1,20 +1,24 @@
-﻿namespace Core.ECS.Components;
+﻿using System.Runtime.Serialization;
 
+namespace Core.ECS.Components;
+
+[DataContract]
 public class CName : IComponent
 {
-    public Guid Id { get; }
+    [DataMember] private Guid id;
+    public Guid Id => id;
 
-    public string Name { get; set; }
+    [DataMember] public string Name { get; set; }
 
     public CName()
     {
-        Id = Guid.NewGuid();
+        id = Guid.NewGuid();
         Name = "Empty";
     }
-    
+
     public CName(string name)
     {
-        Id = Guid.NewGuid();
+        id = Guid.NewGuid();
         Name = name;
     }
 }

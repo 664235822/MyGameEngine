@@ -1,20 +1,24 @@
-﻿namespace Core.ECS.Components;
+﻿using System.Runtime.Serialization;
 
+namespace Core.ECS.Components;
+
+[DataContract]
 public class CSelfActive : IComponent
 {
-    public Guid Id { get; }
-    
-    public bool IsSelfActive { get; set; }
+    [DataMember] private Guid id;
+    public Guid Id => id;
+
+    [DataMember] public bool IsSelfActive { get; set; }
 
     public CSelfActive()
     {
-        Id = Guid.NewGuid();
+        id = Guid.NewGuid();
         IsSelfActive = true;
     }
-    
+
     public CSelfActive(bool isSelfActive)
     {
-        Id = Guid.NewGuid();
+        id = Guid.NewGuid();
         IsSelfActive = isSelfActive;
     }
 }

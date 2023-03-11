@@ -1,17 +1,24 @@
-﻿namespace Core.ECS.Components;
+﻿using System.Runtime.Serialization;
 
+namespace Core.ECS.Components;
+
+[DataContract]
 public class CHierarchy : IComponent
 {
-    public Guid Id { get; }
+    [DataMember] private Guid id;
+    [DataMember] private Guid? parentId;
+    [DataMember] private List<Guid> children;
 
-    public Guid? ParentId { get; internal set; }
+    public Guid Id => id;
 
-    public List<Guid> Children { get; }
+    public Guid? ParentId => parentId;
+
+    public List<Guid> Children => children;
 
     public CHierarchy()
     {
-        Id = Guid.NewGuid();
-        ParentId = null;
-        Children = new List<Guid>();
+        id = Guid.NewGuid();
+        parentId = null;
+        children = new List<Guid>();
     }
 }

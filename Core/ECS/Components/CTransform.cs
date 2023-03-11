@@ -1,14 +1,18 @@
-﻿using OpenTK.Mathematics;
+﻿using System.Runtime.Serialization;
+using OpenTK.Mathematics;
 
 namespace Core.ECS.Components;
 
+[DataContract]
 public class CTransform : IComponent
 {
-    public Guid Id { get; }
+    [DataMember] private Guid id;
+
+    public Guid Id => id;
 
     public CTransform()
     {
-        Id = Guid.NewGuid();
+        id = Guid.NewGuid();
 
         position = new Vector3();
         rotation = Quaternion.Identity;
@@ -20,9 +24,9 @@ public class CTransform : IComponent
         isDirty = false;
     }
 
-    private Vector3 position;
-    private Quaternion rotation;
-    private Vector3 scale;
+    [DataMember] private Vector3 position;
+    [DataMember] private Quaternion rotation;
+    [DataMember] private Vector3 scale;
     private Matrix4 parentMatrix;
     private Matrix4 localMatrix;
     private Matrix4 worldMatrix;
@@ -168,7 +172,7 @@ public class CTransform : IComponent
     public Vector3 LocalForward => LocalRotation * Vector3.UnitZ;
     public Vector3 LocalUp => LocalRotation * Vector3.UnitY;
     public Vector3 LocalRight => LocalRotation * Vector3.UnitX;
-    
+
     public Vector3 WorldForward => WorldRotation * Vector3.UnitZ;
     public Vector3 WorldUp => WorldRotation * Vector3.UnitY;
     public Vector3 WorldRight => WorldRotation * Vector3.UnitX;
@@ -187,5 +191,28 @@ public class CTransform : IComponent
         position = localMatrix.ExtractTranslation();
         rotation = localMatrix.ExtractRotation();
         scale = localMatrix.ExtractScale();
+
+        isDirty = false;
+    }
+
+    [OnSerializing]
+    public void OnSerializing(StreamingContext context)
+    {
+    }
+
+    [OnSerialized]
+    public void OnSerialized(StreamingContext context)
+    {
+    }
+
+    [OnDeserializing]
+    public void OnDeserializing(StreamingContext context)
+    {
+    }
+
+    [OnDeserialized]
+    public void OnDeserialized(StreamingContext context)
+    {
+        UpdateMatrices();
     }
 }

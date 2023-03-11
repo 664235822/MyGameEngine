@@ -1,20 +1,25 @@
-﻿namespace Core.ECS.Components;
+﻿using System.Runtime.Serialization;
 
+namespace Core.ECS.Components;
+
+[DataContract]
 public class CTag : IComponent
 {
-    public Guid Id { get; }
+    [DataMember] private Guid id;
 
-    public string Tag { get; set; }
+    public Guid Id => id;
+
+    [DataMember] public string Tag { get; set; }
 
     public CTag()
     {
-        Id = Guid.NewGuid();
+        id = Guid.NewGuid();
         Tag = "";
     }
 
     public CTag(string tag)
     {
-        Id = Guid.NewGuid();
+        id = Guid.NewGuid();
         Tag = tag;
     }
 

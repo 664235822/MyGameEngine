@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.ECS.Components;
 using Core.Render.Resources;
+using Core.Tools;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -35,6 +36,8 @@ namespace Sandbox
 
             CTransform c1 = new CTransform();
             c1.LocalPosition += new Vector3(0, 0, 1);
+            SerializeHelper.Serialize(c1, @"C:\Users\zz664\Desktop\a.xml");
+            SerializeHelper.DeSerialize(@"C:\Users\zz664\Desktop\a.xml", out CTransform? c2);
 
             myModel = Model.Create(@"G:\MyGameEngine\Core\Resources\backpack.obj");
             shader = Shader.Create(@"G:\MyGameEngine\Core\Shader\Triangles.glsl");
